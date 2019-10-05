@@ -10,6 +10,7 @@ fn main() {
         eprintln!("Argument Error: Too little or too many arguments");
         process::exit(1);
     } else if args.len() == 3 {
+        //checks to see if -r is after the file path
         if args[2].contains("-r") {
             r_arg = true;
         } else {
@@ -17,9 +18,9 @@ fn main() {
             process::exit(1);
         }
     }
-
+    //stores the first supplied argument as the file path
     let packet_path: String = args[1].clone();
-
+    //running function based on -r argument
     if r_arg {
         print_ordered(packet_path);
     } else {
@@ -27,6 +28,7 @@ fn main() {
     }
 }
 
+//prints packets based on their accept-time bytes in the packet
 fn print_ordered(path: String) -> () {
     let open_file = fs::File::open(path).expect("Could not find/open file");
     let pcap_reader = pcap_file::PcapReader::new(open_file).unwrap();
@@ -68,6 +70,7 @@ fn print_ordered(path: String) -> () {
 
 }
 
+//Prints out packets as they came in, in the pcap-file
 fn print_unordered(path: String) -> () {
     let open_file = fs::File::open(path).expect("Could not find/open file");
     let pcap_reader = pcap_file::PcapReader::new(open_file).unwrap();
@@ -75,9 +78,6 @@ fn print_unordered(path: String) -> () {
     for packet in pcap_reader {
         let packet = packet.unwrap();
         let should_search = valid_packet(&packet);
-
-        //Checks to see if packet is long enough to contain data then checks to see if it contain b6034
-
         if should_search {
             print_packet(&packet);
         }
